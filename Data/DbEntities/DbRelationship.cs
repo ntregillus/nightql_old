@@ -5,6 +5,9 @@ namespace NightQL.Data.DbEntities
     public class DbRelationship
     {
         public int ID { get; set; }
+
+        public DbSchema Schema {get; set;}
+
         [StringLength(128)]
         public string ParentEntity { get; set; }
         [StringLength(128)]

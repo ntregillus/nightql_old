@@ -18,6 +18,12 @@ namespace NightQL.Models
         public string Name { get; set; }
 
         /// <summary>
+        /// Authentication value to use in the auth header
+        /// </summary>
+        /// <returns></returns>
+        public string Secret {get;set;}
+
+        /// <summary>
         /// used to dupliate an existing schema with a new name
         /// </summary>
         /// <returns></returns>
@@ -73,6 +79,36 @@ namespace NightQL.Models
                 Backward = $"DROP SCHEMA [{Name}]"
             };
             yield return createSchema;
+            var createLogin = new DbChange {
+                Forward = $"CREATE LOGIN [user_{Name}] WITH PASSWORD = 'Nate5462{Name}';",
+                Backward = $"DROP LOGIN [user_{Name}];"
+            };
+            yield return createLogin;
+            var createUser = new DbChange {
+                Forward = $"CREATE USER [user_{Name}] FOR LOGIN [user_{Name}] WITH DEFAULT_SCHEMA = [{Name}]",
+                Backward = $"DROP USER IF EXISTS [user_{Name}]"
+            };
+            yield return createUser;
+            var denyPermissions = new DbChange {
+                Forward = $"DENY EXECUTE ON SCHEMA:: [{Name}] TO [user_{Name}]",
+                Backward = $"REVOKE EXECUTE ON SCHEMA:: [{Name}] TO [user_{Name}]"
+            };
+            yield return denyPermissions; //removes permissions to procs entirly 
+            var grantPermissions = new DbChange {
+                Forward = $"GRANT CONTROL ON SCHEMA:: [{Name}] TO [user_{Name}]",
+                Backward = $"REVOKE CONTROL ON SCHEMA:: [{Name}] TO [user_{Name}]"
+            };
+            yield return grantPermissions;
+            var grantCreateTable = new DbChange {
+                Forward = $"GRANT CREATE TABLE TO [user_{Name}]",
+                Backward = $"REVOKE CREATE TABLE TO [user_{Name}]"
+            };
+            yield return grantCreateTable;
+            var grantDboPermissions = new DbChange {
+                Forward = $"GRANT REFERENCES, SELECT, INSERT, UPDATE ON DbEntity TO [user_{Name}]",
+                Backward = $"REVOKE REFERENCES, SELECT, INSERT, UPDATE ON DbEntity TO [user_{Name}]"
+            };
+            yield return grantCreateTable;
             //TODO: add db changes to duplicate copiedschema
             //TODO: create method for adding views to referenced schemas
 

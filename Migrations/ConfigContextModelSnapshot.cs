@@ -125,7 +125,11 @@ namespace NightQL.Migrations
                     b.Property<string>("ParentEntity")
                         .HasMaxLength(128);
 
+                    b.Property<int?>("SchemaID");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("SchemaID");
 
                     b.ToTable("DbRelationship");
                 });
@@ -192,6 +196,13 @@ namespace NightQL.Migrations
                     b.HasOne("NightQL.Data.DbEntities.DbUser", "User")
                         .WithMany()
                         .HasForeignKey("UserID");
+                });
+
+            modelBuilder.Entity("NightQL.Data.DbEntities.DbRelationship", b =>
+                {
+                    b.HasOne("NightQL.Data.DbEntities.DbSchema", "Schema")
+                        .WithMany()
+                        .HasForeignKey("SchemaID");
                 });
 #pragma warning restore 612, 618
         }

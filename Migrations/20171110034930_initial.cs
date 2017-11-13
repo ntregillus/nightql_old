@@ -10,23 +10,6 @@ namespace NightQL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "DbRelationship",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ChildAlias = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
-                    ChildEntity = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
-                    ChildRequiresParent = table.Column<bool>(type: "bit", nullable: false),
-                    ParentAlias = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
-                    ParentEntity = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DbRelationship", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DbSchema",
                 columns: table => new
                 {
@@ -89,6 +72,30 @@ namespace NightQL.Migrations
                     table.PrimaryKey("PK_DbEntity", x => x.ID);
                     table.ForeignKey(
                         name: "FK_DbEntity_DbSchema_SchemaID",
+                        column: x => x.SchemaID,
+                        principalTable: "DbSchema",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DbRelationship",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ChildAlias = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    ChildEntity = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    ChildRequiresParent = table.Column<bool>(type: "bit", nullable: false),
+                    ParentAlias = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    ParentEntity = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    SchemaID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DbRelationship", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_DbRelationship_DbSchema_SchemaID",
                         column: x => x.SchemaID,
                         principalTable: "DbSchema",
                         principalColumn: "ID",
@@ -176,6 +183,11 @@ namespace NightQL.Migrations
                 name: "IX_DbLink_RelationshipID",
                 table: "DbLink",
                 column: "RelationshipID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DbRelationship_SchemaID",
+                table: "DbRelationship",
+                column: "SchemaID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Permissions_UserID",

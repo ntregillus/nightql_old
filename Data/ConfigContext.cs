@@ -47,6 +47,7 @@ namespace NightQL.Data
                 IS_NULLABLE as FieldRequired,
                 CASE DATA_TYPE 
                 WHEN 'nvarchar' THEN 'String'
+                WHEN 'bigint'   THEN 'Long'
                 WHEN 'varchar'	THEN 'String'
                 WHEN 'int'		THEN 'Integer'
                 WHEN 'Date' THEN 'Date'
@@ -125,6 +126,16 @@ namespace NightQL.Data
             return model;
         }
 
+        public async Task CreateRelationships(string schema, RelationshipList relationships)
+        {
+            var dbSchema = await Schemas.FirstOrDefaultAsync(s=>s.Name == schema);
+            
+            var changes = relationships.SelectMany(r => 
+                          r.GetCreateScripts(schema));
+ 
+            SafelyExecuteChanges(changes);
+        }
+
         protected void SafelyExecuteChanges(IEnumerable<DbChange> changes)
         {
             var successChanges = new Stack<DbChange>();
@@ -134,10 +145,10 @@ namespace NightQL.Data
                 {
                     Console.WriteLine("-----------------");
                     Console.WriteLine(change.Forward);
-                    Console.WriteLine("-----------------");
                     Database.ExecuteSqlCommand(change.Forward);
                     successChanges.Push(change);
                 }
+                Changes.AddRange(changes);
             }catch(Exception ex)
             {
                 try{

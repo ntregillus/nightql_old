@@ -29,6 +29,9 @@ namespace NightQL.Models
                 string result = null;
                 switch(DataType.Value)
                 {
+                    case ValueType.Long:
+                    result = "[bigint]";
+                    break;
                     case ValueType.Boolean:
                     result = "[bit]";
                     break;
@@ -64,6 +67,7 @@ namespace NightQL.Models
     }
     public enum ValueType
     {
+        Long,
         Boolean,
         Integer,
         String,

@@ -17,13 +17,8 @@ namespace NightQL.Models
         /// </summary>
         /// <returns></returns>
         [Required]
+        [RegularExpression("^[A-Za-z_][A-Za-z\\d_]*$", ErrorMessage ="Only alphanumeric characters are allowed")]
         public string Name { get; set; }
-
-        /// <summary>
-        /// the list of claims that will allow edits to this entity
-        /// </summary>
-        /// <returns></returns>
-        public List<Claim> Claims { get; set; }
 
         public List<Field> Fields { get; set; }
 
@@ -31,7 +26,8 @@ namespace NightQL.Models
         {
             var createRawTable = new DbChange();
             var script = new StringBuilder();
-            script.AppendLine($"CREATE TABLE [{schema}].[{Name}] (");
+            //script.AppendLine($"CREATE TABLE [{schema}].[{Name}] (");
+            script.AppendLine($"CREATE TABLE [{Name}] ("); //should use default schema!
             script.AppendLine(" ID BIGINT NOT NULL,");
             var writeColumns = string.Join(", "+Environment.NewLine, from field in Fields 
                                 select field.MsSqlCreate());
@@ -46,13 +42,32 @@ namespace NightQL.Models
             }
 
             createRawTable.Forward = script.ToString();
-            createRawTable.Backward = $"DROP TABLE [{schema}].[{Name}]";
+            //createRawTable.Backward = $"DROP TABLE [{schema}].[{Name}]";
+            createRawTable.Backward = $"DROP TABLE [{Name}]";
             yield return createRawTable;
             //next foriegn keys
-            var fkChange = new DbChange();
-            fkChange.Forward = $"ALTER TABLE [{schema}].[{Name}]  WITH CHECK ADD  CONSTRAINT [FK_DbEntity_{schema}_{Name}] FOREIGN KEY([ID])"
-                             + $"REFERENCES [dbo].[DbEntity] ([ID])";
-            fkChange.Backward = $"ALTER TABLE [{schema}].[{Name}] DROP CONSTRAINT [FK_DbEntity_{schema}_{Name}]";
+            // var fkChange = new DbChange{
+            //     Forward = $"ALTER TABLE [{schema}].[{Name}]  WITH CHECK ADD  CONSTRAINT [FK_DbEntity_{schema}_{Name}] FOREIGN KEY([ID])"
+            //                     + $"REFERENCES [dbo].[DbEntity] ([ID])",
+            //     Backward = $"ALTER TABLE [{schema}].[{Name}] DROP CONSTRAINT [FK_DbEntity_{schema}_{Name}]"
+            // };
+            var constraint = new StringBuilder();
+            var rollback = new StringBuilder();
+            constraint.AppendLine("DECLARE @ConstStr AS NVARCHAR(MAX) = ");
+            rollback.AppendLine(constraint.ToString());
+
+            constraint.Append($"'ALTER TABLE [{Name}]  WITH CHECK ADD  CONSTRAINT [FK_DbEntity_'+SCHEMA_NAME()+'_{Name}] FOREIGN KEY([ID])");
+            constraint.Append($" REFERENCES [dbo].[DbEntity] ([ID])';");
+            constraint.AppendLine();
+            constraint.AppendLine("EXEC(@ConstStr)");
+
+            rollback.Append($"'ALTER TABLE [{Name}] DROP CONSTRAINT [FK_DbEntity_'+SCHEMA_NAME()+'_{Name}]'");
+            rollback.AppendLine();
+            rollback.AppendLine("EXEC(@ConstStr)");
+            var fkChange = new DbChange{
+                Forward = constraint.ToString(),
+                Backward = rollback.ToString()
+            };
             yield return fkChange;
 
         }
@@ -65,9 +80,9 @@ namespace NightQL.Models
             foreach(var dupe in this.GroupBy(x=>x.Name.ToLower())
               .Where(g=>g.Count()>1)
               .Select(y=> new { Entity = y.First(), Counter = y.Count()}))
-              {
-                  yield return new ValidationResult($"More than one entity with the name {dupe.Entity.Name} was provided.");
-              }
+            {
+                yield return new ValidationResult($"More than one entity with the name {dupe.Entity.Name} was provided.");
+            }
               
         }
     }

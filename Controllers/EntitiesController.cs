@@ -46,15 +46,10 @@ namespace NightQL.Controllers
             {
                 return result;
             }
-
+            Db.ChangeDatabase(userId:"user_"+schema, password:"Nate5462"+schema, integratedSecuity:false);
             Db.CreateEntity(schema, model);
             return Accepted();
         }
-        /// <summary>
-        /// used to validate entities are actaully new
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
         private IActionResult ValidateNewEntity(string schema, Entity model)
         {
             var existingEntities = Db.GetEntityDefinitions(schema, new EntitySearch{ Name = model.Name });
@@ -68,5 +63,6 @@ namespace NightQL.Controllers
             }
             return result;
         }
+
     }
 }

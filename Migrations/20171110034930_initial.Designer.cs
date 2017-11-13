@@ -11,7 +11,7 @@ using System;
 namespace NightQL.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20171107053735_initial")]
+    [Migration("20171110034930_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,7 +126,11 @@ namespace NightQL.Migrations
                     b.Property<string>("ParentEntity")
                         .HasMaxLength(128);
 
+                    b.Property<int?>("SchemaID");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("SchemaID");
 
                     b.ToTable("DbRelationship");
                 });
@@ -193,6 +197,13 @@ namespace NightQL.Migrations
                     b.HasOne("NightQL.Data.DbEntities.DbUser", "User")
                         .WithMany()
                         .HasForeignKey("UserID");
+                });
+
+            modelBuilder.Entity("NightQL.Data.DbEntities.DbRelationship", b =>
+                {
+                    b.HasOne("NightQL.Data.DbEntities.DbSchema", "Schema")
+                        .WithMany()
+                        .HasForeignKey("SchemaID");
                 });
 #pragma warning restore 612, 618
         }

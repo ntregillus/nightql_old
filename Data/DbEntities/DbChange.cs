@@ -11,6 +11,7 @@ namespace NightQL.Data.DbEntities
         public string Forward { get; set; }
         [StringLength(4000)]
         public string Backward { get; set;}
-    }
 
+        
+    }
 }
