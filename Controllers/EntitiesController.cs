@@ -36,16 +36,13 @@ namespace NightQL.Controllers
         [SwaggerRequestExample(typeof(Entity), typeof(EntityExample))]
         public async Task<IActionResult> CreateEntity([FromRoute]string schema, [FromBody]Entity model)
         {
-            var result = await StandardValidationStuff(schema);
+            var result = await StandardValidationStuff(schema)
+                       ??  ValidateNewEntity(schema, model);
             if(result != null)
             {
                 return result;
             }
-            result = ValidateNewEntity(schema, model);
-            if(result != null)
-            {
-                return result;
-            }
+
             Db.ChangeDatabase(userId:"user_"+schema, password:"Nate5462"+schema, integratedSecuity:false);
             Db.CreateEntity(schema, model);
             return Accepted();

@@ -12,6 +12,10 @@ namespace NightQL.Models
     /// </summary>
     public class Entity
     {
+        public Entity() 
+        {
+            Fields = new List<Field>();
+        }
         /// <summary>
         /// The name of the persistent entity. It will be the Operation that will appear in the api
         /// </summary>

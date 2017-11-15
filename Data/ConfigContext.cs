@@ -61,6 +61,12 @@ namespace NightQL.Data
             from INFORMATION_SCHEMA.COLUMNS
             WHERE TABLE_SCHEMA = @schema");
             exec.AddParameter("@schema", schema);
+            if(!string.IsNullOrEmpty(query.Name))
+            {
+                sql.AppendLine("AND TABLE_NAME = @EntityName");
+                exec.AddParameter("@EntityName", query.Name);
+
+            }
             if(!string.IsNullOrWhiteSpace(query.FieldName))
             {
                 sql.AppendLine("AND TABLE_NAME IN (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME = @FieldName)");
@@ -84,13 +90,14 @@ namespace NightQL.Data
                         currentEntity = new Entity { Name = name };
                         results.Add(name, currentEntity);
                     }
+                    
                     var newField = new Field
                     {
                         Name = reader["FieldName"].ToString(),
-                        DataType = (Models.ValueType)Enum.Parse(typeof(Models.ValueType), reader["DataType"].ToString()),
-                        Required = (reader["Required"].ToString() == "YES"),
+                        Required = (reader["FieldRequired"].ToString() == "YES"),
                         Length = reader["Length"] == DBNull.Value ? null : new int?(Convert.ToInt32(reader["Length"]))
                     };
+                    newField.SetValueTypeFromString(reader["DataType"].ToString());
                     currentEntity.Fields.Add(newField);
                 }
             });

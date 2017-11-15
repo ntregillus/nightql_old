@@ -55,16 +55,16 @@ namespace NightQL.Models
             var fwd = new StringBuilder();
             fwd.AppendLine("INSERT INTO [dbo].[DbRelationship]([ChildAlias],[ChildEntity],[ChildRequiresParent],[ParentAlias],[ParentEntity],[SchemaID])");
             fwd.AppendLine($"SELECT '{ChildAlias}', '{ChildEntity}', {RequiresParent()}, '{ParentAlias}', '{ParentEntity}', s.ID");
-            fwd.AppendLine($"FROM [dbo].[DbSchema] as s WHERE s.[Name] = '{schema}'");
+            fwd.AppendLine($"FROM [dbo].[DbSchema] as s WHERE s.[Name] = SCHEMA_NAME()");
             var bkwrd = new StringBuilder();
             bkwrd.AppendLine("DELETE FROM [dbo].[Link] WHERE RelationshipID in ");
             bkwrd.AppendLine("(SELECT ID FROM [dbo].Relationship as r ");
             bkwrd.AppendLine(" JOIN [dbo].DbSchema as s on s.ID = r.SchemaID");
-            bkwrd.AppendLine($" WHERE s.[Name] = '{schema}'");
+            bkwrd.AppendLine($" WHERE s.[Name] = SCHEMA_NAME()");
             bkwrd.AppendLine($" AND ChildAlias = '{ChildAlias}' AND ParentAlias = '{ParentAlias}';");
             bkwrd.AppendLine($"DELETE FROM [dbo].[Relationship]");
             bkwrd.AppendLine($" WHERE ChildAlias = '{ChildAlias}' AND ParentAlias = '{ParentAlias}'");
-            bkwrd.AppendLine($" AND SchemaID in (SELECT ID from [dbo].[DbSchema] WHERE [Name] = '{schema}');");
+            bkwrd.AppendLine($" AND SchemaID in (SELECT ID from [dbo].[DbSchema] WHERE [Name] = SCHEMA_NAME());");
             yield return new DbChange 
             {
                 Forward = fwd.ToString(),

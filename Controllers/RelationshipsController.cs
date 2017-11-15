@@ -42,7 +42,7 @@ namespace NightQL.Controllers
             if(result != null){
                 return result;
             }
-            
+            Db.ChangeDatabase(userId:"user_"+schema, password:"Nate5462"+schema, integratedSecuity:false);
             await Db.CreateRelationships(schema, model);
 
             return Accepted();

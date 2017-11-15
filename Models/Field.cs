@@ -8,7 +8,7 @@ namespace NightQL.Models
     /// <summary>
     /// defines a field within an Entity
     /// </summary>
-    public class Field
+    public class Field: IValidatableObject
     {
         [Required]
         public string Name { get; set; }
@@ -19,13 +19,24 @@ namespace NightQL.Models
         [Required]
         public bool? Required { get; set; }
 
+        
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if(DataType.HasValue && DataType.Value == ValueType.String && !Length.HasValue)
+            {
+                yield return new ValidationResult($"String fields require a Length value.", new [] {"Length"});
+            }
+        }
+
         public string MsSqlCreate()
         {
             return $"{Name} {dbType} {isNull}";
         }
 
-        protected string dbType{
-            get{
+        protected string dbType
+        {
+            get
+            {
                 string result = null;
                 switch(DataType.Value)
                 {
@@ -56,9 +67,44 @@ namespace NightQL.Models
                 return result;
             }
         }
-        protected string isNull {
-            get{
-                if(Required.Value){
+        public void SetValueTypeFromString(string value)
+        {
+            ValueType result;
+            switch(value)
+            {
+                case "Long":
+                result = ValueType.Long;
+                break;
+                case "Boolean":
+                result = ValueType.Long;
+                break;
+                case "Date":
+                result = ValueType.Date;
+                break;
+                case "DateTime":
+                result = ValueType.DateTime;
+                break;
+                case "Guid":
+                result = ValueType.Guid;
+                break;
+                case "Integer":
+                result = ValueType.Integer;
+                break;
+                case "String":
+                result = ValueType.String;
+                break;
+                default:
+                throw new NotImplementedException($"not handling valuetype of {DataType}.");
+            }
+            DataType = result;
+        }
+
+        protected string isNull 
+        {
+            get
+            {
+                if(Required.Value)
+                {
                     return "NOT NULL";
                 }
                 return "NULL";
@@ -75,6 +121,7 @@ namespace NightQL.Models
         DateTime,
         Guid
     }
+
     public class FieldList : List<Field>, IValidatableObject
     {
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
