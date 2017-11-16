@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace NightQL.Models
 {
@@ -111,6 +113,7 @@ namespace NightQL.Models
             }
         }
     }
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum ValueType
     {
         Long,

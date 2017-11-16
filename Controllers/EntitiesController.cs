@@ -15,7 +15,7 @@ namespace NightQL.Controllers
     {
         public EntitiesController(ConfigContext db):base(db){}
 
-        [Route("api/{schema}/Entities")]
+        [Route("api/{schema}/entities")]
         [HttpGet]
         [SwaggerResponse(200, typeof(EntityList))]
         [SwaggerResponseExample(200, typeof(EntityListExample))]
@@ -30,7 +30,7 @@ namespace NightQL.Controllers
            return Ok(matchingEntities);
         }
 
-        [Route("api/{schema}/Entities")]
+        [Route("api/{schema}/entities")]
         [HttpPost]
         [SwaggerResponse(203, typeof(Entity))]
         [SwaggerRequestExample(typeof(Entity), typeof(EntityExample))]

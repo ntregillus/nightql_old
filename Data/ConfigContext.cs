@@ -133,10 +133,8 @@ namespace NightQL.Data
             return model;
         }
 
-        public async Task CreateRelationships(string schema, RelationshipList relationships)
-        {
-            var dbSchema = await Schemas.FirstOrDefaultAsync(s=>s.Name == schema);
-            
+        public void CreateRelationships(string schema, RelationshipList relationships)
+        {           
             var changes = relationships.SelectMany(r => 
                           r.GetCreateScripts(schema));
  

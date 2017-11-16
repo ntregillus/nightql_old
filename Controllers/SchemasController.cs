@@ -11,7 +11,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace NightQL.Controllers
 {
-    [Route("api/Schemas")]
+    [Route("api/schemas")]
     public class SchemasController:BaseSchemaController {
         public SchemasController(ConfigContext db):base(db){}
 

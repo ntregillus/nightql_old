@@ -109,6 +109,16 @@ namespace NightQL.Models
                 Backward = $"REVOKE REFERENCES, SELECT, INSERT, UPDATE ON DbEntity TO [user_{Name}]"
             };
             yield return grantCreateTable;
+            var grantSelectDbSchema = new DbChange {
+                Forward = $"GRANT SELECT ON DbSchema TO [user_{Name}]",
+                Backward = $"REVOKE SELECT ON DbSchema TO [user_{Name}]"
+            };
+            yield return grantSelectDbSchema;            
+            var grantDbRelationship = new DbChange {
+                Forward = $"GRANT SELECT, INSERT, DELETE ON DbRelationship TO [user_{Name}]",
+                Backward = $"REVOKE SELECT, INSERT, DELETE ON DbRelationship TO [user_{Name}]"
+            };
+            yield return grantSelectDbSchema;
             //TODO: add db changes to duplicate copiedschema
             //TODO: create method for adding views to referenced schemas
 

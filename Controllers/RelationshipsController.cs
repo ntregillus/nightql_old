@@ -9,6 +9,9 @@ using NightQL.Examples;
 using NightQL.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.Examples;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+
 namespace NightQL.Controllers
 {
     public class RelationshipsController: BaseSchemaController
@@ -22,33 +25,62 @@ namespace NightQL.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [Route("api/{schema}/Entities/{name}/relationships")]
+        [Route("api/{schema}/entities/{name}/relationships")]
+        [HttpGet]
+        [SwaggerOperation(Tags = new [] {"Entities"})]
+        [SwaggerResponse(200, typeof(Relationship))]
+        [SwaggerResponseExample(200, typeof(RelationshipListExamples))]
+        public async Task<IActionResult> Get([FromRoute]string schema, [FromRoute] string name)
+        {
+            var result = await StandardValidationStuff(schema, entityName: name);
+            if(result != null){
+                return result;
+            }
+            var relationships = Db.Relationships.Include(r=>r.Schema)
+                            .Where(r=>r.Schema.Name == schema)
+                            .Where(r=>r.ParentEntity == name || r.ChildEntity == name);
+            var content = Mapper.Map<IEnumerable<Relationship>>(relationships);
+            return Ok(content);
+        }
+
+        /// <summary>
+        /// used to validate entities are actaully new
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Route("api/{schema}/relationships")]
         [HttpGet]
         [SwaggerResponse(200, typeof(Relationship))]
         [SwaggerResponseExample(200, typeof(RelationshipListExamples))]
-        public IActionResult Get([FromRoute]string schema, [FromRoute] string name)
+        public async Task<IActionResult> GetAll([FromRoute]string schema)
         {
-            throw new NotImplementedException();
+            var result = await StandardValidationStuff(schema);
+            var relationships = Db.Relationships.Include(r=>r.Schema)
+                            .Where(r=>r.Schema.Name == schema);
+            var content = Mapper.Map<IEnumerable<Relationship>>(relationships);
+            return Ok(content);
         }
 
-        [Route("api/{schema}/Entities/{name}/relationships")]
+        
+
+        [Route("api/{schema}/relationships")]
         [HttpPost]
         [SwaggerResponse(200, typeof(RelationshipList))]
         [SwaggerResponseExample(200, typeof(RelationshipExamples))]
-        public async Task<IActionResult> Post([FromRoute]string schema, [FromRoute] string name, [FromBody] RelationshipList model)
+        public async Task<IActionResult> Post([FromRoute]string schema, [FromBody] RelationshipList model)
         {
-            var result = await StandardValidationStuff(schema, entityName: name)
+            var result = await StandardValidationStuff(schema)
                       ??       ValidateNewRelationships(schema, model);
             if(result != null){
                 return result;
             }
             Db.ChangeDatabase(userId:"user_"+schema, password:"Nate5462"+schema, integratedSecuity:false);
-            await Db.CreateRelationships(schema, model);
+            Db.CreateRelationships(schema, model);
 
             return Accepted();
         }
 
-        private IActionResult ValidateNewRelationships(string schema, RelationshipList relationships)
+        private IActionResult ValidateNewRelationships(string schema,  RelationshipList relationships)
         {
             var existing = Db.Relationships.ToList();
             var dupes = from e in existing

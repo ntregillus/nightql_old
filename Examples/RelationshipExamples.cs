@@ -8,7 +8,6 @@ namespace NightQL.Examples
         public object GetExamples()
         {
             return new Relationship {
-                RelationshipID = 1,
                 ParentAlias = "Business",
                 ChildAlias = "Owner",
                 ParentEntity = "Business",
@@ -24,7 +23,6 @@ namespace NightQL.Examples
         {
             return new [] {
                 new Relationship {
-                    RelationshipID = 1,
                     ParentAlias = "Business",
                     ChildAlias = "Owner",
                     ParentEntity = "Business",
@@ -33,7 +31,6 @@ namespace NightQL.Examples
                 },
                 new Relationship 
                 {
-                    RelationshipID = 2,
                     ParentAlias = "Contact",
                     ChildAlias = "MailingAddress",
                     ParentEntity = "Contact",

@@ -13,10 +13,6 @@ namespace NightQL.Models
     /// </summary>
     public class Relationship
     {
-        /// <summary>
-        /// identifies what type of record the relationship represents in the link table.
-        /// </summary>
-        public int RelationshipID { get; set; }
 
         /// <summary>
         /// alias describing what the parent entity represents to the child entity

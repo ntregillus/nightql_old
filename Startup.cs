@@ -39,6 +39,7 @@ namespace NightQL
             services.AddSwaggerGen(cfg => {
                 cfg.DescribeAllParametersInCamelCase();
                 cfg.SwaggerDoc("v1", new Info {Title="NightQL", Version="v1"});
+                cfg.DescribeAllEnumsAsStrings();
                 cfg.OperationFilter<ExamplesOperationFilter>(); // [SwaggerRequestExample] & [SwaggerResponseExample]
                 cfg.OperationFilter<DescriptionOperationFilter>(); // [Description] on Response properties
                 cfg.OperationFilter<AuthorizationInputOperationFilter>(); // Adds an Authorization input box to every endpoint
