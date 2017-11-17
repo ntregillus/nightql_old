@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace NightQL.Data.DbEntities
@@ -18,6 +19,8 @@ namespace NightQL.Data.DbEntities
         public bool ReadAccess { get; set; }
         public bool WriteAccess { get; set; }
         public bool CreateAccess { get; set; }
+        public DateTime CreatedTimeStamp {get;set;}
+        
     }
 
 }

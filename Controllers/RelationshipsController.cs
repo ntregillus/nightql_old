@@ -80,6 +80,27 @@ namespace NightQL.Controllers
             return Accepted();
         }
 
+        [Route("api/{schema}/relationships")]
+        [HttpDelete]
+        [SwaggerResponse(203, typeof(RelationshipList))]
+        public async Task<IActionResult> Delete([FromRoute]string schema, [FromBody] RelationshipList model)
+        {
+            var result = await StandardValidationStuff(schema)
+                        ?? ValidateDeleteRelationships(schema, model);
+            if (result != null){
+                return result;
+            }
+            throw new NotImplementedException();
+        }
+
+        private IActionResult ValidateDeleteRelationships(string schema, RelationshipList model)
+        {
+            throw new NotImplementedException();
+            for(int i = 0; i < model.Count; i++){
+
+            }
+        }
+
         private IActionResult ValidateNewRelationships(string schema,  RelationshipList relationships)
         {
             var existing = Db.Relationships.ToList();
@@ -96,8 +117,8 @@ namespace NightQL.Controllers
                                 &&  e.ParentAlias.ToLower() == current.ParentAlias.ToLower()))
                 {
                     var msg = $"A relationship already exists with a parentAlias of {current.ParentAlias} and childAlias of {current.ChildAlias}.";
-                    ModelState.AddModelError($"model[{i}].parentAlias",  msg);
-                    ModelState.AddModelError($"model[{i}].childAlias",  msg);
+                    ModelState.AddModelError($"[{i}].parentAlias",  msg);
+                    ModelState.AddModelError($"[{i}].childAlias",  msg);
                 }
             }
             if(!ModelState.IsValid)

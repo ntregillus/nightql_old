@@ -28,12 +28,18 @@ namespace NightQL.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DbSchema>().ToTable("DbSchema");
-            modelBuilder.Entity<DbEntity>().ToTable("DbEntity");
-            modelBuilder.Entity<DbRelationship>().ToTable("DbRelationship");
-            modelBuilder.Entity<DbLink>().ToTable("DbLink");
-            modelBuilder.Entity<DbUser>().ToTable("DbUser");
-            modelBuilder.Entity<DbChange>().ToTable("DbChange");
+            modelBuilder.Entity<DbSchema>().ToTable("DbSchema").Property(t=>t.CreatedTimeStamp).HasDefaultValueSql("GETUTCDATE()");
+            modelBuilder.Entity<DbEntity>().ToTable("DbEntity").Property(t=>t.CreatedTimeStamp).HasDefaultValueSql("GETUTCDATE()");
+            modelBuilder.Entity<DbRelationship>().ToTable("DbRelationship").Property(t=>t.CreatedTimeStamp).HasDefaultValueSql("GETUTCDATE()");
+            modelBuilder.Entity<DbLink>().ToTable("DbLink").Property(t=>t.CreatedTimeStamp).HasDefaultValueSql("GETUTCDATE()");
+            modelBuilder.Entity<DbUser>().ToTable("DbUser").Property(t=>t.CreatedTimeStamp).HasDefaultValueSql("GETUTCDATE()");
+            modelBuilder.Entity<DbChange>().ToTable("DbChange").Property(t=>t.CreatedTimeStamp).HasDefaultValueSql("GETUTCDATE()");
+        
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+            base.OnModelCreating(modelBuilder);
         }
 
         public IEnumerable<Entity> GetEntityDefinitions(string schema, EntitySearch query)

@@ -11,7 +11,7 @@ using System;
 namespace NightQL.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20171110034930_initial")]
+    [Migration("20171117033515_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,10 +29,16 @@ namespace NightQL.Migrations
                     b.Property<string>("Backward")
                         .HasMaxLength(4000);
 
+                    b.Property<DateTime>("CreatedTimeStamp")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("GETUTCDATE()");
+
                     b.Property<string>("Forward")
                         .HasMaxLength(4000);
 
-                    b.Property<int?>("SchemaID");
+                    b.Property<Guid>("Guid");
+
+                    b.Property<int>("SchemaID");
 
                     b.HasKey("ID");
 
@@ -46,11 +52,15 @@ namespace NightQL.Migrations
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<DateTime>("CreatedTimeStamp")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("GETUTCDATE()");
+
                     b.Property<Guid>("Guid");
 
                     b.Property<bool>("IsActive");
 
-                    b.Property<int?>("SchemaID");
+                    b.Property<int>("SchemaID");
 
                     b.HasKey("ID");
 
@@ -64,11 +74,17 @@ namespace NightQL.Migrations
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<long?>("ChildID");
+                    b.Property<long>("ChildID");
 
-                    b.Property<long?>("ParentID");
+                    b.Property<DateTime>("CreatedTimeStamp")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int?>("RelationshipID");
+                    b.Property<bool>("IsActive");
+
+                    b.Property<long>("ParentID");
+
+                    b.Property<int>("RelationshipID");
 
                     b.HasKey("ID");
 
@@ -87,6 +103,8 @@ namespace NightQL.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<bool>("CreateAccess");
+
+                    b.Property<DateTime>("CreatedTimeStamp");
 
                     b.Property<string>("Entity")
                         .HasMaxLength(128);
@@ -113,20 +131,30 @@ namespace NightQL.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("ChildAlias")
+                        .IsRequired()
                         .HasMaxLength(128);
 
                     b.Property<string>("ChildEntity")
+                        .IsRequired()
                         .HasMaxLength(128);
 
                     b.Property<bool>("ChildRequiresParent");
 
+                    b.Property<DateTime>("CreatedTimeStamp")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsActive");
+
                     b.Property<string>("ParentAlias")
+                        .IsRequired()
                         .HasMaxLength(128);
 
                     b.Property<string>("ParentEntity")
+                        .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<int?>("SchemaID");
+                    b.Property<int>("SchemaID");
 
                     b.HasKey("ID");
 
@@ -140,7 +168,15 @@ namespace NightQL.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Name");
+                    b.Property<DateTime>("CreatedTimeStamp")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128);
 
                     b.HasKey("ID");
 
@@ -152,8 +188,14 @@ namespace NightQL.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<DateTime>("CreatedTimeStamp")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("GETUTCDATE()");
+
                     b.Property<string>("Description")
                         .HasMaxLength(128);
+
+                    b.Property<bool>("IsActive");
 
                     b.Property<string>("Secret")
                         .HasMaxLength(128);
@@ -167,43 +209,50 @@ namespace NightQL.Migrations
                 {
                     b.HasOne("NightQL.Data.DbEntities.DbSchema", "Schema")
                         .WithMany()
-                        .HasForeignKey("SchemaID");
+                        .HasForeignKey("SchemaID")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("NightQL.Data.DbEntities.DbEntity", b =>
                 {
                     b.HasOne("NightQL.Data.DbEntities.DbSchema", "Schema")
                         .WithMany()
-                        .HasForeignKey("SchemaID");
+                        .HasForeignKey("SchemaID")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("NightQL.Data.DbEntities.DbLink", b =>
                 {
                     b.HasOne("NightQL.Data.DbEntities.DbEntity", "Child")
                         .WithMany()
-                        .HasForeignKey("ChildID");
+                        .HasForeignKey("ChildID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("NightQL.Data.DbEntities.DbEntity", "Parent")
                         .WithMany()
-                        .HasForeignKey("ParentID");
+                        .HasForeignKey("ParentID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("NightQL.Data.DbEntities.DbRelationship", "Relationship")
                         .WithMany()
-                        .HasForeignKey("RelationshipID");
+                        .HasForeignKey("RelationshipID")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("NightQL.Data.DbEntities.DbPermission", b =>
                 {
                     b.HasOne("NightQL.Data.DbEntities.DbUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserID");
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("NightQL.Data.DbEntities.DbRelationship", b =>
                 {
                     b.HasOne("NightQL.Data.DbEntities.DbSchema", "Schema")
                         .WithMany()
-                        .HasForeignKey("SchemaID");
+                        .HasForeignKey("SchemaID")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

@@ -15,7 +15,9 @@ namespace NightQL.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    CreatedTimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,7 +30,9 @@ namespace NightQL.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CreatedTimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     Description = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Secret = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true)
                 },
                 constraints: table =>
@@ -43,8 +47,10 @@ namespace NightQL.Migrations
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Backward = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    CreatedTimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     Forward = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
-                    SchemaID = table.Column<int>(type: "int", nullable: true)
+                    Guid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SchemaID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,9 +69,10 @@ namespace NightQL.Migrations
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CreatedTimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     Guid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    SchemaID = table.Column<int>(type: "int", nullable: true)
+                    SchemaID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,12 +91,14 @@ namespace NightQL.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ChildAlias = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
-                    ChildEntity = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    ChildAlias = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ChildEntity = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     ChildRequiresParent = table.Column<bool>(type: "bit", nullable: false),
-                    ParentAlias = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
-                    ParentEntity = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
-                    SchemaID = table.Column<int>(type: "int", nullable: true)
+                    CreatedTimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    ParentAlias = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ParentEntity = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    SchemaID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -109,6 +118,7 @@ namespace NightQL.Migrations
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreateAccess = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedTimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Entity = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
                     ReadAccess = table.Column<bool>(type: "bit", nullable: false),
                     SchemaName = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
@@ -132,9 +142,11 @@ namespace NightQL.Migrations
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ChildID = table.Column<long>(type: "bigint", nullable: true),
-                    ParentID = table.Column<long>(type: "bigint", nullable: true),
-                    RelationshipID = table.Column<int>(type: "int", nullable: true)
+                    ChildID = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedTimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    ParentID = table.Column<long>(type: "bigint", nullable: false),
+                    RelationshipID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

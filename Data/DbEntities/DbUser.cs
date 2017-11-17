@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace NightQL.Data.DbEntities
@@ -16,5 +17,8 @@ namespace NightQL.Data.DbEntities
         /// </summary>
        [StringLength(128)]
        public string Secret { get; set; }
+
+       public bool IsActive {get;set;}
+       public DateTime CreatedTimeStamp {get;set;}
     }
 }
