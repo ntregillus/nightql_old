@@ -1,9 +1,11 @@
 
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using LinqKit;
 using NightQL.Data.DbEntities;
 
 namespace NightQL.Models
@@ -66,6 +68,14 @@ namespace NightQL.Models
                 Forward = fwd.ToString(),
                 Backward = bkwrd.ToString()
             };
+        }
+        public bool MatchesAny(IQueryable<DbRelationship> list){
+            var filter = PredicateBuilder.New<DbRelationship>();
+            filter.And(r=>r.ChildAlias == ChildAlias);
+            filter.And(r=>r.ParentAlias == ParentAlias);
+            filter.And(r=>r.ParentEntity == ParentEntity);
+            filter.And(r=>r.ChildEntity == ChildEntity);
+            return list.Any(filter);
         }
     }
 

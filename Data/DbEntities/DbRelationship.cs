@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-
 namespace NightQL.Data.DbEntities
 {
     public class DbRelationship

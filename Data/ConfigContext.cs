@@ -111,6 +111,11 @@ namespace NightQL.Data
    
         }
 
+        public void RemoveRelationships(RelationshipList model)
+        {
+            throw new NotImplementedException();
+        }
+
         protected SqlExcecuter GetExcecuter(){
             return new SqlExcecuter(Database.GetDbConnection());
         }

@@ -10,6 +10,8 @@ using NightQL.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.Examples;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using LinqKit;
 using AutoMapper;
 
 namespace NightQL.Controllers
@@ -90,15 +92,26 @@ namespace NightQL.Controllers
             if (result != null){
                 return result;
             }
-            throw new NotImplementedException();
+            Db.RemoveRelationships(model);
+            return Accepted();
         }
 
         private IActionResult ValidateDeleteRelationships(string schema, RelationshipList model)
         {
-            throw new NotImplementedException();
+            var dbRels = Db.Relationships.Include(r=>r.Schema).Where(r=>r.Schema.Name == schema && r.IsActive);
+            
             for(int i = 0; i < model.Count; i++){
-
+                var curRel = model[i];
+                if (!curRel.MatchesAny(dbRels))
+                {
+                    ModelState.AddModelError("[{i}]", "No active Relationships with the given values exists.");
+                }
             }
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return null;
         }
 
         private IActionResult ValidateNewRelationships(string schema,  RelationshipList relationships)
