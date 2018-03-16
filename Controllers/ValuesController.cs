@@ -119,8 +119,12 @@ namespace NightQL.Controllers
         // DELETE api/values/5
         [HttpDelete]
         [Route("api/{schema}/{*url}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromRoute] string schema)
         {
+            var result = await StandardValidationStuff(schema);
+            if(result != null){
+                return result;
+            }
             throw new NotImplementedException();
         }
     }
